@@ -1,0 +1,600 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>B-Tax’s documentation &mdash; B-Tax 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="B-Tax 1.0 documentation" href="#" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="b-tax-s-documentation">
+<h1>B-Tax&#8217;s documentation<a class="headerlink" href="#b-tax-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-run_btax"></span><div class="section" id="runner-script-run-btax-py">
+<h2>Runner Script (run_btax.py):<a class="headerlink" href="#runner-script-run-btax-py" title="Permalink to this headline">¶</a></h2>
+<p>Initial module that contains the method to start the calculations in B-Tax. Makes function calls to split out fixed assets by entity type
+(pull_soi_data), allocate fixed assets to industries (read_bea), grab all the parameters for the final calculations (get_params), and 
+calculate the Cost of Capital, Marginal Effective Tax Rates, and Marginal Effective Total Tax Rates (asset_calcs). Additionally, this 
+method compares the calculated values with those produced by the CBO.
+Last updated: 7/25/2016.</p>
+<dl class="function">
+<dt id="run_btax.run_btax">
+<code class="descclassname">run_btax.</code><code class="descname">run_btax</code><span class="sig-paren">(</span><em>user_params</em><span class="sig-paren">)</span><a class="headerlink" href="#run_btax.run_btax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runner script that kicks off the calculations for B-Tax</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user_params</strong> (<em>dictionary</em>) &#8211; The user input for implementing reforms</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">METR (by industry and asset) and METTR (by asset)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-soi_processing"></span><div class="section" id="soi-auxiliary-script-soi-processing-py">
+<h2>SOI Auxiliary Script (soi_processing.py):<a class="headerlink" href="#soi-auxiliary-script-soi-processing-py" title="Permalink to this headline">¶</a></h2>
+<p>Module that handles reading in the soi data (corporate, partners, and sole proprietorships). Makes calls to a different
+script for each one of these entities. Also provides auxiliary scripts to format the partner and proprietorship dataframes and to
+interpolate missing data.
+Last updated: 7/26/2016.</p>
+<dl class="function">
+<dt id="soi_processing.format_dataframe">
+<code class="descclassname">soi_processing.</code><code class="descname">format_dataframe</code><span class="sig-paren">(</span><em>df</em>, <em>crosswalk</em><span class="sig-paren">)</span><a class="headerlink" href="#soi_processing.format_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats the dataframe with industry codes as the rows and asset information as the columns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<em>DataFrame</em>) &#8211; The dataframe to be formatted</li>
+<li><strong>crosswalk</strong> (<em>DataFrame</em>) &#8211; Maps the SOI codes to their respective industries</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A clean dataframe with the data easily acessible</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="soi_processing.interpolate_data">
+<code class="descclassname">soi_processing.</code><code class="descname">interpolate_data</code><span class="sig-paren">(</span><em>entity_dfs</em>, <em>df</em><span class="sig-paren">)</span><a class="headerlink" href="#soi_processing.interpolate_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fills in the missing values using the proportion of corporate industry values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>entity_dfs</strong> (<em>dictionary</em>) &#8211; Contains all the soi data by entity type</li>
+<li><strong>df</strong> (<em>DataFrame</em>) &#8211; The datframe that will be updated with new values</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The new dataframe with values for all the industries</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="soi_processing.pull_soi_data">
+<code class="descclassname">soi_processing.</code><code class="descname">pull_soi_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#soi_processing.pull_soi_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a dictionary that is updated with the soi entity data after each method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">DataFrames organized by entity type (corp, partner, sole prop)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-pull_soi_partner"></span><div class="section" id="soi-partner-data-pull-soi-partner-py">
+<h2>SOI Partner Data (pull_soi_partner.py):<a class="headerlink" href="#soi-partner-data-pull-soi-partner-py" title="Permalink to this headline">¶</a></h2>
+<p>Module that handles reading in the soi partner data. Contains one long script that loads in the capital stock,
+income and entity information. Using the different asset and income information (ratios of assets to income),
+data can be allocated to all the industries in the different partner entities.
+Last updated: 7/26/2016.</p>
+<dl class="function">
+<dt id="pull_soi_partner.load_partner_data">
+<code class="descclassname">pull_soi_partner.</code><code class="descname">load_partner_data</code><span class="sig-paren">(</span><em>entity_dfs</em><span class="sig-paren">)</span><a class="headerlink" href="#pull_soi_partner.load_partner_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in the partner data and creates new dataframes for each partner type and stores them in the soi dictionary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entity_dfs</strong> (<em>dictionary</em>) &#8211; Contains all the soi data by entity type</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The soi dictionary updated with the partner dataframe</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-pull_soi_corp"></span><div class="section" id="soi-corp-data-pull-soi-corp-py">
+<h2>SOI Corp Data (pull_soi_corp.py):<a class="headerlink" href="#soi-corp-data-pull-soi-corp-py" title="Permalink to this headline">¶</a></h2>
+<p>Module that handles reading in the soi corporate data. Contains a script that loads in the capital stock
+information for total corporations and s corporations. Based on the ratio of assets for total corporations,
+data for s corporations is imputed. Finally, using the difference between the two, the c corporation
+data can be allocated to all the industries. 
+Last updated: 7/26/2016.</p>
+<dl class="function">
+<dt id="pull_soi_corp.calc_proportions">
+<code class="descclassname">pull_soi_corp.</code><code class="descname">calc_proportions</code><span class="sig-paren">(</span><em>tot_corp_data</em>, <em>s_corp_data</em>, <em>columns</em><span class="sig-paren">)</span><a class="headerlink" href="#pull_soi_corp.calc_proportions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the ratio of the minor industry to the major industry to fill in missing s corp data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tot_corp_data</strong> (<em>DataFrame</em>) &#8211; capital stock for all the corporations</li>
+<li><strong>s_corp_data</strong> (<em>DataFrame</em>) &#8211; capital stock for the s corporations</li>
+<li><strong>columns</strong> (<em>list</em>) &#8211; column names for the new DataFrame</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">capital stock for the s corporations with all the industries filled in</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pull_soi_corp.load_corp_data">
+<code class="descclassname">pull_soi_corp.</code><code class="descname">load_corp_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pull_soi_corp.load_corp_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in the total corp and s corp data and calculates the c corp data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">soi corporate capital stock data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-pull_soi_proprietorship"></span><div class="section" id="soi-proprietorship-data-pull-soi-partner-py">
+<h2>SOI Proprietorship Data (pull_soi_partner.py):<a class="headerlink" href="#soi-proprietorship-data-pull-soi-partner-py" title="Permalink to this headline">¶</a></h2>
+<p>Module that handles reading in the soi proprietorship data. Because no fixed asset and land data is 
+available for sole props, the depreciation deduction is used along with the partner data. The 
+ratio of land and fixed assets to the depreciation deduction for partners is used to impute the data
+for sole props. The sole prop inventory and farm data is also loaded in.
+Last updated: 7/26/2016.</p>
+<dl class="function">
+<dt id="pull_soi_proprietorship.format_columns">
+<code class="descclassname">pull_soi_proprietorship.</code><code class="descname">format_columns</code><span class="sig-paren">(</span><em>nonfarm_df</em><span class="sig-paren">)</span><a class="headerlink" href="#pull_soi_proprietorship.format_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes extra characters from the columns of the dataframe</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nonfarm_df</strong> (<em>DataFrame</em>) &#8211; Contains the nonfarm capital stock data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The formatted dataframe</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pull_soi_proprietorship.load_proprietorship_data">
+<code class="descclassname">pull_soi_proprietorship.</code><code class="descname">load_proprietorship_data</code><span class="sig-paren">(</span><em>entity_dfs</em><span class="sig-paren">)</span><a class="headerlink" href="#pull_soi_proprietorship.load_proprietorship_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using the partner and sole prop data, the capital stock data is imputed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entity_dfs</strong> (<em>dictionary</em>) &#8211; Contains all the soi data by entity</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The SOI capital stock data, organized by industry</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-read_bea"></span><div class="section" id="fixed-asset-breakdown-read-bea-py">
+<h2>Fixed Asset Breakdown (read_bea.py):<a class="headerlink" href="#fixed-asset-breakdown-read-bea-py" title="Permalink to this headline">¶</a></h2>
+<p>Using the BEA data spreadsheet fixed assets are allocated to several different industries.
+Based on the SOI data the fixed asset data is divided into both corporate and non-corporate entitities.
+Because of discrepancies in the BEA classifications, NAICS classifications, and the SOI classifications,
+several different crosswalks are used to match the data. The majority of the script takes these crosswalks
+and creates dictionaries to map the codes. Last updated 7/27/2016</p>
+<dl class="function">
+<dt id="read_bea.read_bea">
+<code class="descclassname">read_bea.</code><code class="descname">read_bea</code><span class="sig-paren">(</span><em>entity_dfs</em><span class="sig-paren">)</span><a class="headerlink" href="#read_bea.read_bea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens the BEA workbook and pulls out the asset info</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>entity_dfs</strong> (<em>dictionary</em>) &#8211; Contains all the soi data by entity type</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Fixed asset data organized by industry, entity, and asset type</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-calc_z"></span><div class="section" id="calculate-depreciation-rates-calc-z-py">
+<h2>Calculate Depreciation Rates (calc_z.py):<a class="headerlink" href="#calculate-depreciation-rates-calc-z-py" title="Permalink to this headline">¶</a></h2>
+<p>This module provides functions for calculating the tax depreciation allowance. It also provides a function
+that will return the economic depreciation rate (no calculation needed). The net present value of tax depreciation
+allowances are calculated for both the declining balance and straight line methods of depreciation. Last Updated 7/27/2016</p>
+<dl class="function">
+<dt id="calc_z.calc_tax_depr_rates">
+<code class="descclassname">calc_z.</code><code class="descname">calc_tax_depr_rates</code><span class="sig-paren">(</span><em>r</em>, <em>bonus_deprec</em>, <em>tax_methods</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_z.calc_tax_depr_rates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads in the data for depreciation schedules and depreciation method. Calls the calculation function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>r</strong> (<em>3x2 array</em>) &#8211; Discount rate</li>
+<li><strong>bonus_deprec</strong> (<em>int, float</em>) &#8211; Reform for bonus depreciation</li>
+<li><strong>tax_methods</strong> (<em>dictionary</em>) &#8211; Rates of depreciation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The net present value of depreciation allowances</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">96x3x2 array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_z.dbsl">
+<code class="descclassname">calc_z.</code><code class="descname">dbsl</code><span class="sig-paren">(</span><em>Y</em>, <em>b</em>, <em>r</em>, <em>bonus_deprec</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_z.dbsl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes the calculation for the declining balance method of depreciation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Y</strong> (<em>int, float</em>) &#8211; Service life</li>
+<li><strong>b</strong> (<em>int, float</em>) &#8211; Rate of depreciation</li>
+<li><strong>r</strong> (<em>3x2 array</em>) &#8211; Discount rate</li>
+<li><strong>bonus_deprec</strong> (<em>int, float</em>) &#8211; Reform for bonus depreciation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The net present value of declining balance depreciation allowances</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">96x3x2 array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_z.get_econ_depr">
+<code class="descclassname">calc_z.</code><code class="descname">get_econ_depr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#calc_z.get_econ_depr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads in the list of assets and their economic depreciation values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of asset types and economic depreciation values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_z.npv_tax_deprec">
+<code class="descclassname">calc_z.</code><code class="descname">npv_tax_deprec</code><span class="sig-paren">(</span><em>df</em>, <em>r</em>, <em>bonus_deprec</em>, <em>tax_methods</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_z.npv_tax_deprec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Depending on the method of depreciation, makes calls to either the straight line or declining balance calcs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tax_deprec</strong> (<em>DataFrame</em>) &#8211; Contains the service lives and method of depreciation.</li>
+<li><strong>r</strong> (<em>3x2 array</em>) &#8211; Discount rate</li>
+<li><strong>bonus_deprec</strong> (<em>int, float</em>) &#8211; Reform for bonus depreciation</li>
+<li><strong>tax_methods</strong> (<em>dictionary</em>) &#8211; Rates of depreciation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The net present value of depreciation allowances</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">96x3x2 array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_z.sl">
+<code class="descclassname">calc_z.</code><code class="descname">sl</code><span class="sig-paren">(</span><em>Y</em>, <em>r</em>, <em>bonus_deprec</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_z.sl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes the calculation for the declining balance method of depreciation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>Y</strong> (<em>int, float</em>) &#8211; Service life</li>
+<li><strong>r</strong> (<em>3x2 array</em>) &#8211; Discount rate</li>
+<li><strong>bonus_deprec</strong> (<em>int, float</em>) &#8211; Reform for bonus depreciation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The net present value of straight line depreciation allowances</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">96x3x2 array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-calc_final_outputs"></span><div class="section" id="calculate-rho-metr-mettr-calc-final-output-py">
+<h2>Calculate Rho, METR, &amp; METTR (calc_final_output.py):<a class="headerlink" href="#calculate-rho-metr-mettr-calc-final-output-py" title="Permalink to this headline">¶</a></h2>
+<p>This module provides functions for calculating the cost of capital (rho), marginal effective tax rate
+(METR) and marginal effective total tax rate (METTR). Using the parameters from parameters.py values for
+rho, metr, and mettr are calculated for each BEA asset type. Then values are calculated for rho and metr
+at the industry level. This script also contains a function which aggregates the fixed asset data to the
+two digit NAICS code level. Last Updated 7/27/2016</p>
+<dl class="function">
+<dt id="calc_final_outputs.aggregate_fixed_assets">
+<code class="descclassname">calc_final_outputs.</code><code class="descname">aggregate_fixed_assets</code><span class="sig-paren">(</span><em>fixed_assets</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_final_outputs.aggregate_fixed_assets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregates the fixed assets of the industries to the 2 digit NAICS code level</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fixed_assets</strong> (<em>dictionary</em>) &#8211; Fixed asset data for each industry</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The aggregation of the fixed assets</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_final_outputs.asset_calcs">
+<code class="descclassname">calc_final_outputs.</code><code class="descname">asset_calcs</code><span class="sig-paren">(</span><em>params</em>, <em>fixed_assets</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_final_outputs.asset_calcs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes rho, METR, and METTR at the asset level.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<em>dictionary</em>) &#8211; Constants used in the calculation</li>
+<li><strong>fixed_assets</strong> (<em>dictionary</em>) &#8211; Fixed asset data for each industry</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">rho, METR, METTR, ind_rho, ind_METR</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">96x3x2, DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_final_outputs.industry_calcs">
+<code class="descclassname">calc_final_outputs.</code><code class="descname">industry_calcs</code><span class="sig-paren">(</span><em>agg_fa</em>, <em>rho</em>, <em>metr</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_final_outputs.industry_calcs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the cost of capital and marginal effective tax rates by industry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>agg_fa</strong> (<em>dictionary</em>) &#8211; Fixed assets organized by entity, asset, and industry</li>
+<li><strong>rho</strong> (<em>96x3x2 Array</em>) &#8211; Cost of capital by asset</li>
+<li><strong>metr</strong> (<em>96x3x2 Array</em>) &#8211; Marginal effective tax rate by asset</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The result of the weighted average of the cost of capital and METR for each BEA industry</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-check_output"></span><div class="section" id="check-final-outputs-check-output-py">
+<h2>Check Final Outputs (check_output.py):<a class="headerlink" href="#check-final-outputs-check-output-py" title="Permalink to this headline">¶</a></h2>
+<p>This module loads in the baseline dataframe from a .pkl file and compares it to the
+newly created dataframe (also loaded from a .pkl file) to confirm that none of the final
+calculations have changed. The pandas method assert_frame_equal is used to perform the
+check. Last Updated 7/27/2016</p>
+<dl class="function">
+<dt id="check_output.check_output">
+<code class="descclassname">check_output.</code><code class="descname">check_output</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#check_output.check_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that the two dataframes (baseline and new output) are equal</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-parameters"></span><div class="section" id="parameters-parameters-py">
+<h2>Parameters (parameters.py):<a class="headerlink" href="#parameters-parameters-py" title="Permalink to this headline">¶</a></h2>
+<p>This module contains all the parameters used for the calc_final_outputs.py script. It also
+contains intermediate calculations that produce more relevant parameters. The parameters 
+are placed in a dictionary. Last Updated 7/27/2016</p>
+<dl class="function">
+<dt id="parameters.get_params">
+<code class="descclassname">parameters.</code><code class="descname">get_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#parameters.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains all the parameters</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Inflation rate, depreciation, tax rate, discount rate, return to savers, property tax</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">B-Tax&#8217;s documentation</a><ul>
+<li><a class="reference internal" href="#runner-script-run-btax-py">Runner Script (run_btax.py):</a></li>
+<li><a class="reference internal" href="#soi-auxiliary-script-soi-processing-py">SOI Auxiliary Script (soi_processing.py):</a></li>
+<li><a class="reference internal" href="#soi-partner-data-pull-soi-partner-py">SOI Partner Data (pull_soi_partner.py):</a></li>
+<li><a class="reference internal" href="#soi-corp-data-pull-soi-corp-py">SOI Corp Data (pull_soi_corp.py):</a></li>
+<li><a class="reference internal" href="#soi-proprietorship-data-pull-soi-partner-py">SOI Proprietorship Data (pull_soi_partner.py):</a></li>
+<li><a class="reference internal" href="#fixed-asset-breakdown-read-bea-py">Fixed Asset Breakdown (read_bea.py):</a></li>
+<li><a class="reference internal" href="#calculate-depreciation-rates-calc-z-py">Calculate Depreciation Rates (calc_z.py):</a></li>
+<li><a class="reference internal" href="#calculate-rho-metr-mettr-calc-final-output-py">Calculate Rho, METR, &amp; METTR (calc_final_output.py):</a></li>
+<li><a class="reference internal" href="#check-final-outputs-check-output-py">Check Final Outputs (check_output.py):</a></li>
+<li><a class="reference internal" href="#parameters-parameters-py">Parameters (parameters.py):</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, OSPC.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
