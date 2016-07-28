@@ -1,0 +1,50 @@
+.. B-Tax documentation master file, created by
+   sphinx-quickstart on Mon Jul 25 11:50:36 2016.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+B-Tax's documentation
+=================================
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+.. automodule:: run_btax
+	:members:
+
+.. automodule:: soi_processing
+	:members:
+
+.. automodule:: pull_soi_partner
+	:members:
+	
+.. automodule:: pull_soi_corp
+	:members:
+	
+.. automodule:: pull_soi_proprietorship
+	:members:
+	
+.. automodule:: read_bea
+	:members:
+	
+.. automodule:: calc_z
+	:members:
+	
+.. automodule:: calc_final_outputs
+	:members:
+	
+.. automodule:: check_output
+	:members:
+	
+.. automodule:: parameters
+	:members:
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
