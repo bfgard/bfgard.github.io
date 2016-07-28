@@ -45,6 +45,32 @@
 <ul class="simple">
 </ul>
 </div>
+<span class="target" id="module-run_btax"></span><div class="section" id="runner-script-run-btax-py">
+<h2>Runner Script (run_btax.py):<a class="headerlink" href="#runner-script-run-btax-py" title="Permalink to this headline">¶</a></h2>
+<p>Initial module that contains the method to start the calculations in B-Tax. Makes function calls to split out fixed assets by entity type
+(pull_soi_data), allocate fixed assets to industries (read_bea), grab all the parameters for the final calculations (get_params), and 
+calculate the Cost of Capital, Marginal Effective Tax Rates, and Marginal Effective Total Tax Rates (asset_calcs). Additionally, this 
+method compares the calculated values with those produced by the CBO.
+Last updated: 7/25/2016.</p>
+<dl class="function">
+<dt id="run_btax.run_btax">
+<code class="descclassname">run_btax.</code><code class="descname">run_btax</code><span class="sig-paren">(</span><em>user_params</em><span class="sig-paren">)</span><a class="headerlink" href="#run_btax.run_btax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runner script that kicks off the calculations for B-Tax</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user_params</strong> (<em>dictionary</em>) &#8211; The user input for implementing reforms</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">METR (by industry and asset) and METTR (by asset)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 <span class="target" id="module-soi_processing"></span><div class="section" id="soi-auxiliary-script-soi-processing-py">
 <h2>SOI Auxiliary Script (soi_processing.py):<a class="headerlink" href="#soi-auxiliary-script-soi-processing-py" title="Permalink to this headline">¶</a></h2>
 <p>Module that handles reading in the soi data (corporate, partners, and sole proprietorships). Makes calls to a different
@@ -384,6 +410,94 @@ allowances are calculated for both the declining balance and straight line metho
 </dd></dl>
 
 </div>
+<span class="target" id="module-calc_final_outputs"></span><div class="section" id="calculate-rho-metr-mettr-calc-final-output-py">
+<h2>Calculate Rho, METR, &amp; METTR (calc_final_output.py):<a class="headerlink" href="#calculate-rho-metr-mettr-calc-final-output-py" title="Permalink to this headline">¶</a></h2>
+<p>This module provides functions for calculating the cost of capital (rho), marginal effective tax rate
+(METR) and marginal effective total tax rate (METTR). Using the parameters from parameters.py values for
+rho, metr, and mettr are calculated for each BEA asset type. Then values are calculated for rho and metr
+at the industry level. This script also contains a function which aggregates the fixed asset data to the
+two digit NAICS code level. Last Updated 7/27/2016</p>
+<dl class="function">
+<dt id="calc_final_outputs.aggregate_fixed_assets">
+<code class="descclassname">calc_final_outputs.</code><code class="descname">aggregate_fixed_assets</code><span class="sig-paren">(</span><em>fixed_assets</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_final_outputs.aggregate_fixed_assets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregates the fixed assets of the industries to the 2 digit NAICS code level</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fixed_assets</strong> (<em>dictionary</em>) &#8211; Fixed asset data for each industry</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The aggregation of the fixed assets</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_final_outputs.asset_calcs">
+<code class="descclassname">calc_final_outputs.</code><code class="descname">asset_calcs</code><span class="sig-paren">(</span><em>params</em>, <em>fixed_assets</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_final_outputs.asset_calcs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes rho, METR, and METTR at the asset level.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>params</strong> (<em>dictionary</em>) &#8211; Constants used in the calculation</li>
+<li><strong>fixed_assets</strong> (<em>dictionary</em>) &#8211; Fixed asset data for each industry</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">rho, METR, METTR, ind_rho, ind_METR</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">96x3x2, DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_final_outputs.industry_calcs">
+<code class="descclassname">calc_final_outputs.</code><code class="descname">industry_calcs</code><span class="sig-paren">(</span><em>agg_fa</em>, <em>rho</em>, <em>metr</em><span class="sig-paren">)</span><a class="headerlink" href="#calc_final_outputs.industry_calcs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the cost of capital and marginal effective tax rates by industry</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>agg_fa</strong> (<em>dictionary</em>) &#8211; Fixed assets organized by entity, asset, and industry</li>
+<li><strong>rho</strong> (<em>96x3x2 Array</em>) &#8211; Cost of capital by asset</li>
+<li><strong>metr</strong> (<em>96x3x2 Array</em>) &#8211; Marginal effective tax rate by asset</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The result of the weighted average of the cost of capital and METR for each BEA industry</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-check_output"></span><div class="section" id="check-final-outputs-check-output-py">
+<h2>Check Final Outputs (check_output.py):<a class="headerlink" href="#check-final-outputs-check-output-py" title="Permalink to this headline">¶</a></h2>
+<p>This module loads in the baseline dataframe from a .pkl file and compares it to the
+newly created dataframe (also loaded from a .pkl file) to confirm that none of the final
+calculations have changed. The pandas method assert_frame_equal is used to perform the
+check. Last Updated 7/27/2016</p>
+<dl class="function">
+<dt id="check_output.check_output">
+<code class="descclassname">check_output.</code><code class="descname">check_output</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#check_output.check_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that the two dataframes (baseline and new output) are equal</p>
+</dd></dl>
+
+</div>
 <span class="target" id="module-parameters"></span><div class="section" id="parameters-parameters-py">
 <h2>Parameters (parameters.py):<a class="headerlink" href="#parameters-parameters-py" title="Permalink to this headline">¶</a></h2>
 <p>This module contains all the parameters used for the calc_final_outputs.py script. It also
@@ -427,6 +541,23 @@ are placed in a dictionary. Last Updated 7/27/2016</p>
 </dd></dl>
 
 </div>
+<span class="target" id="module-util"></span><div class="section" id="utility-functions-util-py">
+<h2>Utility Functions (util.py):<a class="headerlink" href="#utility-functions-util-py" title="Permalink to this headline">¶</a></h2>
+<p>This module provides functions for reading in the data with a relative path. Last updated 7/28/2016</p>
+<dl class="function">
+<dt id="util.read_from_egg">
+<code class="descclassname">util.</code><code class="descname">read_from_egg</code><span class="sig-paren">(</span><em>tfile</em><span class="sig-paren">)</span><a class="headerlink" href="#util.read_from_egg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a relative path, getting the contents
+locally or from the installed egg, parsing the contents
+based on file_type if given, such as yaml
+Params:
+tfile: relative package path
+file_type: file extension such as &#8220;json&#8221; or &#8220;yaml&#8221; or None</p>
+<p>Returns:
+contents: yaml or json loaded or raw</p>
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -446,13 +577,17 @@ are placed in a dictionary. Last Updated 7/27/2016</p>
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">B-Tax&#8217;s documentation</a><ul>
+<li><a class="reference internal" href="#runner-script-run-btax-py">Runner Script (run_btax.py):</a></li>
 <li><a class="reference internal" href="#soi-auxiliary-script-soi-processing-py">SOI Auxiliary Script (soi_processing.py):</a></li>
 <li><a class="reference internal" href="#soi-partner-data-pull-soi-partner-py">SOI Partner Data (pull_soi_partner.py):</a></li>
 <li><a class="reference internal" href="#soi-corp-data-pull-soi-corp-py">SOI Corp Data (pull_soi_corp.py):</a></li>
 <li><a class="reference internal" href="#soi-proprietorship-data-pull-soi-partner-py">SOI Proprietorship Data (pull_soi_partner.py):</a></li>
 <li><a class="reference internal" href="#fixed-asset-breakdown-read-bea-py">Fixed Asset Breakdown (read_bea.py):</a></li>
 <li><a class="reference internal" href="#calculate-depreciation-rates-calc-z-py">Calculate Depreciation Rates (calc_z.py):</a></li>
+<li><a class="reference internal" href="#calculate-rho-metr-mettr-calc-final-output-py">Calculate Rho, METR, &amp; METTR (calc_final_output.py):</a></li>
+<li><a class="reference internal" href="#check-final-outputs-check-output-py">Check Final Outputs (check_output.py):</a></li>
 <li><a class="reference internal" href="#parameters-parameters-py">Parameters (parameters.py):</a></li>
+<li><a class="reference internal" href="#utility-functions-util-py">Utility Functions (util.py):</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
